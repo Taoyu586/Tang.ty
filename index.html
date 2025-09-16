@@ -1,4 +1,33 @@
-<div class="admin-actions">
+.sync-status {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            display: none;
+        }
+
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-form {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .auth-form h            <div class="admin-actions">
                 <button class="btn" onclick="downloadWriteups()">📥 Export All Writeups</button>
                 <button class="btn btn-secondary" onclick="clearWriteups()">🗑️ Clear All</button>
                 <button class="btn btn-secondary" onclick="showJsonEditor()">✏️ Edit JSON</button>
@@ -407,6 +436,149 @@
             display: none;
         }
 
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-form {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .auth-form h
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+            background: var(--bg-secondary);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--accent);
+            background: var(--bg-tertiary);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .admin-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-title {
+            color: var(--accent);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--accent-dim);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .github-sync {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .github-sync h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .github-input {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .sync-status {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            display: none;
+        }
+
         /* Footer */
         .footer {
             background: var(--bg-secondary);
@@ -451,7 +623,6 @@
                 <ul class="nav-links">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#writeups">Writeups</a></li>
-                    <li><a href="#admin">Admin</a></li>
                 </ul>
             </nav>
         </div>
@@ -539,8 +710,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
 
     <script>
-        // Sample writeup data - Load from localStorage if available
-        let writeups = JSON.parse(localStorage.getItem('ctf-writeups')) || [
+        // Sample writeup data - now fetches from GitHub
+        let writeups = [
             {
                 id: 1,
                 title: "30-Day Honeypot Experiment: What I Learned",
@@ -594,22 +765,167 @@
         function init() {
             renderWriteups();
             setupFilters();
-            setupFileUpload();
-            saveWriteups(); // Save default writeups to localStorage if first time
+            loadFromGitHub();
         }
 
-        // Save writeups to localStorage
-        function saveWriteups() {
-            localStorage.setItem('ctf-writeups', JSON.stringify(writeups));
+        // Load writeups from GitHub repository
+        async function loadFromGitHub() {
+            // Get repository info from current URL or default config
+            const repoInfo = getRepoInfo();
+            if (!repoInfo) {
+                console.log('Using default writeups - no GitHub repository detected');
+                return;
+            }
+
+            try {
+                showStatus('🔄 Loading writeups from GitHub...', 'info');
+                const githubWriteups = await fetchGitHubWriteups(repoInfo.owner, repoInfo.repo);
+                
+                if (githubWriteups.length > 0) {
+                    // Merge GitHub writeups with default ones, GitHub takes priority
+                    const combinedWriteups = [...githubWriteups, ...writeups.filter(w => 
+                        !githubWriteups.some(gw => gw.title === w.title)
+                    )];
+                    writeups.length = 0;
+                    writeups.push(...combinedWriteups);
+                    renderWriteups();
+                    showStatus(`✅ Loaded ${githubWriteups.length} writeups from GitHub`, 'success');
+                } else {
+                    showStatus('📁 No writeups found in GitHub repository', 'info');
+                }
+            } catch (error) {
+                console.error('Error loading from GitHub:', error);
+                showStatus('❌ Error loading from GitHub - using default writeups', 'error');
+            }
         }
 
-        // Add new writeup
-        function addWriteup(writeup) {
-            writeup.id = Date.now(); // Simple ID generation
-            writeups.unshift(writeup); // Add to beginning
-            saveWriteups();
-            renderWriteups();
-            showStatus('✅ Writeup added successfully!', 'success');
+        // Get repository info from current URL
+        function getRepoInfo() {
+            const url = window.location.href;
+            const match = url.match(/https:\/\/([^.]+)\.github\.io\/([^\/]+)/);
+            
+            if (match) {
+                return {
+                    owner: match[1],
+                    repo: match[2]
+                };
+            }
+            return null;
+        }
+
+        // Fetch writeups from GitHub repository
+        async function fetchGitHubWriteups(owner, repo) {
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/writeups`;
+            
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        console.log('No writeups folder found in repository');
+                        return [];
+                    }
+                    throw new Error(`GitHub API error: ${response.status}`);
+                }
+
+                const files = await response.json();
+                const markdownFiles = files.filter(file => 
+                    file.name.endsWith('.md') && file.type === 'file'
+                );
+
+                const writeupPromises = markdownFiles.map(async file => {
+                    const contentResponse = await fetch(file.download_url);
+                    const markdown = await contentResponse.text();
+                    return parseMarkdownToWriteup(markdown, file.name);
+                });
+
+                const githubWriteups = await Promise.all(writeupPromises);
+                return githubWriteups.filter(writeup => writeup !== null);
+            } catch (error) {
+                console.error('Error fetching from GitHub:', error);
+                throw error;
+            }
+        }
+
+        // Parse markdown file to writeup object
+        function parseMarkdownToWriteup(markdown, filename) {
+            try {
+                // Extract frontmatter (metadata between ---)
+                const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
+                const match = markdown.match(frontmatterRegex);
+                
+                let metadata = {};
+                let content = markdown;
+
+                if (match) {
+                    // Parse YAML-like frontmatter
+                    const frontmatter = match[1];
+                    const body = match[2];
+                    
+                    frontmatter.split('\n').forEach(line => {
+                        const [key, ...valueParts] = line.split(':');
+                        if (key && valueParts.length) {
+                            metadata[key.trim()] = valueParts.join(':').trim().replace(/['"]/g, '');
+                        }
+                    });
+                    
+                    content = body;
+                }
+
+                // Extract title from first h1 or use filename
+                const titleMatch = content.match(/^#\s+(.+)$/m);
+                const title = metadata.title || (titleMatch ? titleMatch[1] : filename.replace('.md', ''));
+
+                // Extract excerpt from first paragraph
+                const paragraphs = content.split('\n\n').filter(p => p.trim() && !p.startsWith('#'));
+                const excerpt = metadata.excerpt || (paragraphs[0] ? paragraphs[0].replace(/\n/g, ' ').substring(0, 150) + '...' : '');
+
+                // Convert markdown to HTML
+                const htmlContent = marked.parse(content);
+
+                return {
+                    id: Date.now() + Math.random(), // Unique ID
+                    title: title,
+                    category: metadata.category || 'web',
+                    event: metadata.event || 'CTF Challenge',
+                    date: metadata.date || new Date().toISOString().split('T')[0],
+                    excerpt: excerpt,
+                    content: htmlContent
+                };
+            } catch (error) {
+                console.error(`Error parsing ${filename}:`, error);
+                return null;
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            // Create status element if it doesn't exist
+            let statusDiv = document.getElementById('status-message');
+            if (!statusDiv) {
+                statusDiv = document.createElement('div');
+                statusDiv.id = 'status-message';
+                statusDiv.style.position = 'fixed';
+                statusDiv.style.top = '20px';
+                statusDiv.style.right = '20px';
+                statusDiv.style.padding = '1rem';
+                statusDiv.style.borderRadius = '0.5rem';
+                statusDiv.style.zIndex = '1000';
+                statusDiv.style.maxWidth = '300px';
+                document.body.appendChild(statusDiv);
+            }
+            
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            statusDiv.style.backgroundColor = type === 'success' ? '#155724' : 
+                                            type === 'error' ? '#721c24' : '#1b1e21';
+            statusDiv.style.color = type === 'success' ? '#d4edda' : 
+                                   type === 'error' ? '#f8d7da' : '#d1ecf1';
+            statusDiv.style.border = type === 'success' ? '1px solid #c3e6cb' : 
+                                    type === 'error' ? '1px solid #f5c6cb' : '1px solid #bee5eb';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 4000);
         }
 
         // Render writeups based on current filter
