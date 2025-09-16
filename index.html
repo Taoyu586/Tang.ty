@@ -1,43 +1,4 @@
-.sync-status {
-            margin-top: 1rem;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-            display: none;
-        }
-
-        .auth-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .auth-form {
-            background: var(--bg-secondary);
-            padding: 2rem;
-            border-radius: 0.75rem;
-            border: 1px solid var(--border);
-            max-width: 400px;
-            width: 90%;
-        }
-
-        .auth-form h            <div class="admin-actions">
-                <button class="btn" onclick="downloadWriteups()">📥 Export All Writeups</button>
-                <button class="btn btn-secondary" onclick="clearWriteups()">🗑️ Clear All</button>
-                <button class="btn btn-secondary" onclick="showJsonEditor()">✏️ Edit JSON</button>
-            </div>
-
-            <div class="github-sync">
-                <h3>🔗 GitHub Sync</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    Automatically load writeups from your GitHub repository's <code>writeups/</code> folder.
-                </p><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -314,124 +275,9 @@
             margin: 1rem 0;
             overflow-x: auto;
         }
-        .upload-zone {
-            border: 2px dashed var(--border);
-            border-radius: 0.75rem;
-            padding: 2rem;
-            margin: 2rem 0;
-            text-align: center;
-            background: var(--bg-secondary);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
 
-        .upload-zone.dragover {
-            border-color: var(--accent);
-            background: var(--bg-tertiary);
-        }
-
-        .upload-zone:hover {
-            border-color: var(--accent);
-        }
-
-        .upload-icon {
-            font-size: 3rem;
-            color: var(--accent);
-            margin-bottom: 1rem;
-        }
-
-        .upload-text {
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .upload-hint {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
-
-        .admin-panel {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            padding: 2rem;
-            margin: 2rem 0;
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .admin-title {
-            color: var(--accent);
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        .btn {
-            background: var(--accent);
-            color: var(--bg-primary);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .btn:hover {
-            background: var(--accent-dim);
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
+        .modal-body strong {
             color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border);
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
-        }
-
-        .github-sync {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin: 1rem 0;
-        }
-
-        .github-sync h3 {
-            color: var(--accent);
-            margin-bottom: 1rem;
-        }
-
-        .github-input {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-            width: 100%;
-            margin: 0.5rem 0;
-        }
-
-        .sync-status {
-            margin-top: 1rem;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-            display: none;
         }
 
         /* Footer */
@@ -466,6 +312,18 @@
             .modal-body {
                 padding: 1rem;
             }
+        }
+
+        /* Status message styles for GitHub loading */
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            z-index: 1000;
+            max-width: 300px;
+            display: none;
         }
     </style>
 </head>
@@ -512,30 +370,6 @@
             <div class="writeups-grid" id="writeups-grid">
                 <!-- Writeup cards will be populated by JavaScript -->
             </div>
-        </div>
-    </section>
-
-    <!-- Admin Panel -->
-    <section class="admin-panel" id="admin" style="margin: 3rem auto; max-width: 1200px;">
-        <div class="container">
-            <div class="admin-header">
-                <h2 class="admin-title">📝 Admin Panel</h2>
-            </div>
-            
-            <div class="upload-zone" id="upload-zone">
-                <div class="upload-icon">📁</div>
-                <div class="upload-text">Drag & drop markdown files here</div>
-                <div class="upload-hint">Or click to browse files (.md format)</div>
-                <input type="file" id="file-input" accept=".md" multiple style="display: none;">
-            </div>
-
-            <div class="admin-actions">
-                <button class="btn" onclick="downloadWriteups()">📥 Export All Writeups</button>
-                <button class="btn btn-secondary" onclick="clearWriteups()">🗑️ Clear All</button>
-                <button class="btn btn-secondary" onclick="showJsonEditor()">✏️ Edit JSON</button>
-            </div>
-
-            <div id="status-message" style="margin-top: 1rem; padding: 1rem; border-radius: 0.5rem; display: none;"></div>
         </div>
     </section>
 
@@ -755,17 +589,10 @@
         // Show status message
         function showStatus(message, type) {
             // Create status element if it doesn't exist
-            let statusDiv = document.getElementById('status-message');
+            let statusDiv = document.querySelector('.status-message');
             if (!statusDiv) {
                 statusDiv = document.createElement('div');
-                statusDiv.id = 'status-message';
-                statusDiv.style.position = 'fixed';
-                statusDiv.style.top = '20px';
-                statusDiv.style.right = '20px';
-                statusDiv.style.padding = '1rem';
-                statusDiv.style.borderRadius = '0.5rem';
-                statusDiv.style.zIndex = '1000';
-                statusDiv.style.maxWidth = '300px';
+                statusDiv.className = 'status-message';
                 document.body.appendChild(statusDiv);
             }
             
@@ -824,167 +651,8 @@
             return card;
         }
 
-        // Setup file upload functionality
-        function setupFileUpload() {
-            const uploadZone = document.getElementById('upload-zone');
-            const fileInput = document.getElementById('file-input');
-
-            // Handle drag and drop
-            uploadZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadZone.classList.add('dragover');
-            });
-
-            uploadZone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                uploadZone.classList.remove('dragover');
-            });
-
-            uploadZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadZone.classList.remove('dragover');
-                const files = Array.from(e.dataTransfer.files);
-                handleFiles(files);
-            });
-
-            // Handle click to browse
-            uploadZone.addEventListener('click', () => {
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                const files = Array.from(e.target.files);
-                handleFiles(files);
-            });
-        }
-
-        // Handle uploaded files
-        function handleFiles(files) {
-            const mdFiles = files.filter(file => file.name.endsWith('.md'));
-            
-            if (mdFiles.length === 0) {
-                showStatus('❌ Please upload .md (markdown) files only', 'error');
-                return;
-            }
-
-            mdFiles.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const markdown = e.target.result;
-                    const writeup = parseMarkdownToWriteup(markdown, file.name);
-                    if (writeup) {
-                        addWriteup(writeup);
-                    }
-                };
-                reader.readAsText(file);
-            });
-        }
-
-        // Parse markdown file to writeup object
-        function parseMarkdownToWriteup(markdown, filename) {
-            try {
-                // Extract frontmatter (metadata between ---)
-                const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
-                const match = markdown.match(frontmatterRegex);
-                
-                let metadata = {};
-                let content = markdown;
-
-                if (match) {
-                    // Parse YAML-like frontmatter
-                    const frontmatter = match[1];
-                    const body = match[2];
-                    
-                    frontmatter.split('\n').forEach(line => {
-                        const [key, ...valueParts] = line.split(':');
-                        if (key && valueParts.length) {
-                            metadata[key.trim()] = valueParts.join(':').trim().replace(/['"]/g, '');
-                        }
-                    });
-                    
-                    content = body;
-                }
-
-                // Extract title from first h1 or use filename
-                const titleMatch = content.match(/^#\s+(.+)$/m);
-                const title = metadata.title || (titleMatch ? titleMatch[1] : filename.replace('.md', ''));
-
-                // Extract excerpt from first paragraph
-                const paragraphs = content.split('\n\n').filter(p => p.trim() && !p.startsWith('#'));
-                const excerpt = metadata.excerpt || (paragraphs[0] ? paragraphs[0].replace(/\n/g, ' ').substring(0, 150) + '...' : '');
-
-                // Convert markdown to HTML
-                const htmlContent = marked.parse(content);
-
-                return {
-                    title: title,
-                    category: metadata.category || 'web',
-                    event: metadata.event || 'CTF Challenge',
-                    date: metadata.date || new Date().toISOString().split('T')[0],
-                    excerpt: excerpt,
-                    content: htmlContent
-                };
-            } catch (error) {
-                showStatus(`❌ Error parsing ${filename}: ${error.message}`, 'error');
-                return null;
-            }
-        }
-
-        // Show status message
-        function showStatus(message, type) {
-            const statusDiv = document.getElementById('status-message');
-            statusDiv.textContent = message;
-            statusDiv.style.display = 'block';
-            statusDiv.style.backgroundColor = type === 'success' ? '#155724' : '#721c24';
-            statusDiv.style.color = type === 'success' ? '#d4edda' : '#f8d7da';
-            statusDiv.style.border = type === 'success' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
-            
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 3000);
-        }
-
-        // Download all writeups as JSON
-        function downloadWriteups() {
-            const dataStr = JSON.stringify(writeups, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'ctf-writeups-backup.json';
-            link.click();
-            URL.revokeObjectURL(url);
-            showStatus('📥 Writeups exported successfully!', 'success');
-        }
-
-        // Clear all writeups
-        function clearWriteups() {
-            if (confirm('Are you sure you want to delete all writeups? This cannot be undone.')) {
-                writeups.length = 0;
-                saveWriteups();
-                renderWriteups();
-                showStatus('🗑️ All writeups cleared', 'success');
-            }
-        }
-
-        // Show JSON editor
-        function showJsonEditor() {
-            const jsonStr = JSON.stringify(writeups, null, 2);
-            const newJson = prompt('Edit writeups JSON (be careful!):', jsonStr);
-            
-            if (newJson && newJson !== jsonStr) {
-                try {
-                    const parsed = JSON.parse(newJson);
-                    writeups.length = 0;
-                    writeups.push(...parsed);
-                    saveWriteups();
-                    renderWriteups();
-                    showStatus('✏️ JSON updated successfully!', 'success');
-                } catch (error) {
-                    showStatus('❌ Invalid JSON format', 'error');
-                }
-            }
-        }
+        // Setup filter buttons
+        function setupFilters() {
             const filterBtns = document.querySelectorAll('.filter-btn');
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
