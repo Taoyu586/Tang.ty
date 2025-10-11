@@ -58,6 +58,7 @@
             font-weight: 700;
             color: var(--accent);
             text-decoration: none;
+            cursor: pointer;
         }
 
         .nav-links {
@@ -70,10 +71,20 @@
             color: var(--text-secondary);
             text-decoration: none;
             transition: color 0.3s;
+            cursor: pointer;
         }
 
         .nav-links a:hover {
             color: var(--accent);
+        }
+
+        /* Page visibility */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
         }
 
         /* Hero Section */
@@ -97,6 +108,55 @@
             color: var(--text-secondary);
             max-width: 600px;
             margin: 0 auto;
+        }
+
+        /* About Me Page */
+        .about-section {
+            padding: 4rem 0;
+            min-height: 60vh;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 3rem;
+        }
+
+        .about-content h2 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .about-content h3 {
+            color: var(--text-primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .about-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .about-content ul {
+            list-style-position: inside;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .about-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.8;
+        }
+
+        .about-content strong {
+            color: var(--text-primary);
         }
 
         /* Filters */
@@ -134,18 +194,18 @@
             border-color: var(--accent);
         }
 
-        /* Writeups Grid */
-        .writeups {
+        /* Writeups/Competitions Grid */
+        .content-section {
             padding: 3rem 0;
         }
 
-        .writeups-grid {
+        .content-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
         }
 
-        .writeup-card {
+        .content-card {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 0.75rem;
@@ -154,19 +214,21 @@
             cursor: pointer;
         }
 
-        .writeup-card:hover {
+        .content-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px var(--shadow);
         }
 
-        .writeup-meta {
+        .card-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
-        .writeup-category {
+        .card-category {
             background: var(--accent);
             color: var(--bg-primary);
             padding: 0.25rem 0.75rem;
@@ -175,27 +237,60 @@
             font-weight: 600;
         }
 
-        .writeup-date {
+        .card-placement {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-date {
             color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
-        .writeup-title {
+        .card-title {
             font-size: 1.3rem;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
         }
 
-        .writeup-event {
+        .card-event {
             color: var(--accent);
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
         }
 
-        .writeup-excerpt {
+        .card-excerpt {
             color: var(--text-secondary);
             font-size: 0.95rem;
             line-height: 1.5;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            color: var(--accent);
+            font-weight: 600;
         }
 
         /* Modal */
@@ -289,6 +384,18 @@
             color: var(--text-secondary);
         }
 
+        /* Status message */
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            z-index: 1000;
+            max-width: 300px;
+            display: none;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
@@ -300,7 +407,7 @@
                 gap: 1rem;
             }
 
-            .writeups-grid {
+            .content-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -312,18 +419,10 @@
             .modal-body {
                 padding: 1rem;
             }
-        }
 
-        /* Status message styles for GitHub loading */
-        .status-message {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            z-index: 1000;
-            max-width: 300px;
-            display: none;
+            .about-content {
+                padding: 2rem 1.5rem;
+            }
         }
     </style>
 </head>
@@ -332,46 +431,130 @@
     <header class="header">
         <div class="container">
             <nav class="nav">
-                <a href="#" class="logo">{ CTF Writeups }</a>
+                <a class="logo" onclick="showPage('home')">{ CTF Writeups }</a>
                 <ul class="nav-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#writeups">Writeups</a></li>
+                    <li><a onclick="showPage('home')">Home</a></li>
+                    <li><a onclick="showPage('about')">About Me</a></li>
+                    <li><a onclick="showPage('writeups')">Writeups</a></li>
+                    <li><a onclick="showPage('competitions')">Competitions</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container">
-            <h1>Security Research & CTF Writeups</h1>
-            <p>Documenting my journey through cybersecurity challenges, vulnerability research, and real-world attack analysis</p>
-        </div>
-    </section>
-
-    <!-- Filters -->
-    <section class="filters">
-        <div class="container">
-            <div class="filter-group">
-                <span class="filter-label">Filter by:</span>
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="web">Web</button>
-                <button class="filter-btn" data-filter="crypto">Crypto</button>
-                <button class="filter-btn" data-filter="pwn">Pwn</button>
-                <button class="filter-btn" data-filter="forensics">Forensics</button>
-                <button class="filter-btn" data-filter="research">Research</button>
+    <!-- Home Page -->
+    <div id="home-page" class="page active">
+        <section class="hero">
+            <div class="container">
+                <h1>Security Research & CTF Writeups</h1>
+                <p>Documenting my journey through cybersecurity challenges, vulnerability research, and real-world attack analysis</p>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Writeups -->
-    <section class="writeups" id="writeups">
-        <div class="container">
-            <div class="writeups-grid" id="writeups-grid">
-                <!-- Writeup cards will be populated by JavaScript -->
+        <section class="content-section">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 2rem; color: var(--accent);">Latest Content</h2>
+                <div class="content-grid" id="home-grid">
+                    <!-- Latest writeups and competitions will be shown here -->
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
+
+    <!-- About Me Page -->
+    <div id="about-page" class="page">
+        <section class="about-section">
+            <div class="container">
+                <div class="about-content">
+                    <h2>About Me</h2>
+                    <p>Passionate and motivated cybersecurity student specializing in Web Exploitation and participating actively in CTF competitions. Currently pursuing BSc (Hons) Information Technology (Computer Networking and Security) at Sunway University.</p>
+
+                    <h3>Education</h3>
+                    <p><strong>Sunway University</strong> - Bandar Sunway<br>
+                    BSc (Hons) Information Technology (Computer Networking and Security)<br>
+                    CGPA: 3.82 | Expected Graduation: January 2027<br>
+                    <em>Relevant Coursework: Computer Networks, Network Security, Operating System Fundamentals</em></p>
+
+                    <p><strong>Sunway College</strong> - Bandar Sunway<br>
+                    Foundation in Science and Technology<br>
+                    CGPA: 3.90 | 2022 - 2023</p>
+
+                    <h3>Skills & Certifications</h3>
+                    <ul>
+                        <li><strong>Technical Skills:</strong> Python, Wireshark, Burp Suite, Nmap</li>
+                        <li><strong>Certifications:</strong> CompTIA Security+ (Ongoing)</li>
+                        <li><strong>Languages:</strong> English (Native), Chinese (Native), Cantonese (Native), Malay (Conversational)</li>
+                    </ul>
+
+                    <h3>Awards & Recognition</h3>
+                    <ul>
+                        <li>SUSTHACK Hackathon Winner</li>
+                        <li>Ernst & Young Business Case Study Winner</li>
+                        <li>Dean's List (Semester 3 & 4)</li>
+                        <li>Jeffery Cheah (ACE) Scholarship</li>
+                    </ul>
+
+                    <h3>Community Involvement</h3>
+                    <ul>
+                        <li>Volunteer for National Taoist Association</li>
+                        <li>Student Program Representative for Bachelor of Information Security</li>
+                        <li>Committee Member for Sunway Photography Club</li>
+                    </ul>
+
+                    <h3>Contact</h3>
+                    <p>Email: Tangtaoyu1@gmail.com<br>
+                    Phone: +60 14624-1913<br>
+                    Location: Kuala Lumpur, Malaysia</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Writeups Page -->
+    <div id="writeups-page" class="page">
+        <section class="hero">
+            <div class="container">
+                <h1>CTF Writeups</h1>
+                <p>Detailed solutions and analysis of capture the flag challenges</p>
+            </div>
+        </section>
+
+        <section class="filters">
+            <div class="container">
+                <div class="filter-group">
+                    <span class="filter-label">Filter by:</span>
+                    <button class="filter-btn active" data-filter="all" onclick="filterWriteups('all')">All</button>
+                    <button class="filter-btn" data-filter="web" onclick="filterWriteups('web')">Web</button>
+                    <button class="filter-btn" data-filter="crypto" onclick="filterWriteups('crypto')">Crypto</button>
+                    <button class="filter-btn" data-filter="pwn" onclick="filterWriteups('pwn')">Pwn</button>
+                    <button class="filter-btn" data-filter="forensics" onclick="filterWriteups('forensics')">Forensics</button>
+                    <button class="filter-btn" data-filter="research" onclick="filterWriteups('research')">Research</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="content-grid" id="writeups-grid"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Competitions Page -->
+    <div id="competitions-page" class="page">
+        <section class="hero">
+            <div class="container">
+                <h1>Competition Results</h1>
+                <p>My performance and achievements in CTF competitions</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="content-grid" id="competitions-grid"></div>
+            </div>
+        </section>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -381,16 +564,14 @@
     </footer>
 
     <!-- Modal -->
-    <div class="modal" id="writeup-modal">
+    <div class="modal" id="content-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <button class="modal-close" onclick="closeModal()">&times;</button>
                 <h2 id="modal-title"></h2>
                 <div id="modal-meta"></div>
             </div>
-            <div class="modal-body" id="modal-body">
-                <!-- Content will be populated by JavaScript -->
-            </div>
+            <div class="modal-body" id="modal-body"></div>
         </div>
     </div>
 
@@ -399,7 +580,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
 
     <script>
-        // Sample writeup data - now fetches from GitHub
+        // Data storage
         let writeups = [
             {
                 id: 1,
@@ -440,77 +621,87 @@
             }
         ];
 
-        // DOM elements
-        const writeupsGrid = document.getElementById('writeups-grid');
-        const modal = document.getElementById('writeup-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalMeta = document.getElementById('modal-meta');
-        const modalBody = document.getElementById('modal-body');
+        let competitions = [];
+        let currentWriteupFilter = 'all';
 
-        // Current filter
-        let currentFilter = 'all';
-
-        // Initialize the page
-        function init() {
-            renderWriteups();
-            setupFilters();
-            loadFromGitHub();
+        // Page navigation
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageName + '-page').classList.add('active');
+            
+            // Update URL hash without scrolling
+            history.pushState(null, null, '#' + pageName);
         }
 
-        // Load writeups from GitHub repository
+        // Initialize
+        function init() {
+            renderWriteups();
+            loadFromGitHub();
+            
+            // Handle initial hash
+            const hash = window.location.hash.slice(1);
+            if (hash && ['home', 'about', 'writeups', 'competitions'].includes(hash)) {
+                showPage(hash);
+            }
+        }
+
+        // Load content from GitHub
         async function loadFromGitHub() {
-            // Get repository info from current URL or default config
             const repoInfo = getRepoInfo();
             if (!repoInfo) {
-                console.log('Using default writeups - no GitHub repository detected');
+                console.log('Using default content - no GitHub repository detected');
+                renderHome();
                 return;
             }
 
             try {
-                showStatus('🔄 Loading writeups from GitHub...', 'info');
-                const githubWriteups = await fetchGitHubWriteups(repoInfo.owner, repoInfo.repo);
+                showStatus('🔄 Loading content from GitHub...', 'info');
                 
+                // Load writeups
+                const githubWriteups = await fetchGitHubContent(repoInfo.owner, repoInfo.repo, 'writeups');
                 if (githubWriteups.length > 0) {
-                    // Merge GitHub writeups with default ones, GitHub takes priority
                     const combinedWriteups = [...githubWriteups, ...writeups.filter(w => 
                         !githubWriteups.some(gw => gw.title === w.title)
                     )];
                     writeups.length = 0;
                     writeups.push(...combinedWriteups);
                     renderWriteups();
-                    showStatus(`✅ Loaded ${githubWriteups.length} writeups from GitHub`, 'success');
-                } else {
-                    showStatus('📁 No writeups found in GitHub repository', 'info');
                 }
+
+                // Load competitions
+                const githubCompetitions = await fetchGitHubContent(repoInfo.owner, repoInfo.repo, 'results');
+                if (githubCompetitions.length > 0) {
+                    competitions = githubCompetitions;
+                    renderCompetitions();
+                }
+
+                renderHome();
+                showStatus(`✅ Loaded content from GitHub`, 'success');
             } catch (error) {
                 console.error('Error loading from GitHub:', error);
-                showStatus('❌ Error loading from GitHub - using default writeups', 'error');
+                showStatus('❌ Error loading from GitHub - using default content', 'error');
+                renderHome();
             }
         }
 
-        // Get repository info from current URL
+        // Get repository info
         function getRepoInfo() {
             const url = window.location.href;
             const match = url.match(/https:\/\/([^.]+)\.github\.io\/([^\/]+)/);
-            
-            if (match) {
-                return {
-                    owner: match[1],
-                    repo: match[2]
-                };
-            }
-            return null;
+            return match ? { owner: match[1], repo: match[2] } : null;
         }
 
-        // Fetch writeups from GitHub repository
-        async function fetchGitHubWriteups(owner, repo) {
-            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/writeups`;
+        // Fetch content from GitHub
+        async function fetchGitHubContent(owner, repo, folder) {
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${folder}`;
             
             try {
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
                     if (response.status === 404) {
-                        console.log('No writeups folder found in repository');
+                        console.log(`No ${folder} folder found in repository`);
                         return [];
                     }
                     throw new Error(`GitHub API error: ${response.status}`);
@@ -521,24 +712,23 @@
                     file.name.endsWith('.md') && file.type === 'file'
                 );
 
-                const writeupPromises = markdownFiles.map(async file => {
+                const contentPromises = markdownFiles.map(async file => {
                     const contentResponse = await fetch(file.download_url);
                     const markdown = await contentResponse.text();
-                    return parseMarkdownToWriteup(markdown, file.name);
+                    return parseMarkdown(markdown, file.name, folder);
                 });
 
-                const githubWriteups = await Promise.all(writeupPromises);
-                return githubWriteups.filter(writeup => writeup !== null);
+                const content = await Promise.all(contentPromises);
+                return content.filter(item => item !== null);
             } catch (error) {
-                console.error('Error fetching from GitHub:', error);
+                console.error(`Error fetching ${folder} from GitHub:`, error);
                 throw error;
             }
         }
 
-        // Parse markdown file to writeup object
-        function parseMarkdownToWriteup(markdown, filename) {
+        // Parse markdown
+        function parseMarkdown(markdown, filename, type) {
             try {
-                // Extract frontmatter (metadata between ---)
                 const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
                 const match = markdown.match(frontmatterRegex);
                 
@@ -546,7 +736,6 @@
                 let content = markdown;
 
                 if (match) {
-                    // Parse YAML-like frontmatter
                     const frontmatter = match[1];
                     const body = match[2];
                     
@@ -560,35 +749,234 @@
                     content = body;
                 }
 
-                // Extract title from first h1 or use filename
                 const titleMatch = content.match(/^#\s+(.+)$/m);
                 const title = metadata.title || (titleMatch ? titleMatch[1] : filename.replace('.md', ''));
 
-                // Extract excerpt from first paragraph
                 const paragraphs = content.split('\n\n').filter(p => p.trim() && !p.startsWith('#'));
                 const excerpt = metadata.excerpt || (paragraphs[0] ? paragraphs[0].replace(/\n/g, ' ').substring(0, 150) + '...' : '');
 
-                // Convert markdown to HTML
                 const htmlContent = marked.parse(content);
 
-                return {
-                    id: Date.now() + Math.random(), // Unique ID
+                const baseData = {
+                    id: Date.now() + Math.random(),
                     title: title,
-                    category: metadata.category || 'web',
-                    event: metadata.event || 'CTF Challenge',
                     date: metadata.date || new Date().toISOString().split('T')[0],
                     excerpt: excerpt,
                     content: htmlContent
                 };
+
+                if (type === 'writeups') {
+                    return {
+                        ...baseData,
+                        category: metadata.category || 'web',
+                        event: metadata.event || 'CTF Challenge'
+                    };
+                } else {
+                    return {
+                        ...baseData,
+                        event: metadata.event || 'CTF Competition',
+                        placement: metadata.placement || 'N/A',
+                        teams: metadata.teams || 'N/A',
+                        points: metadata.points || 'N/A',
+                        categories: metadata.categories || 'Multiple'
+                    };
+                }
             } catch (error) {
                 console.error(`Error parsing ${filename}:`, error);
                 return null;
             }
         }
 
-        // Show status message
+        // Render functions
+        function renderHome() {
+            const homeGrid = document.getElementById('home-grid');
+            homeGrid.innerHTML = '';
+
+            const latestContent = [
+                ...writeups.slice(0, 2).map(w => ({...w, type: 'writeup'})),
+                ...competitions.slice(0, 2).map(c => ({...c, type: 'competition'}))
+            ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
+
+            latestContent.forEach(item => {
+                const card = item.type === 'writeup' 
+                    ? createWriteupCard(item) 
+                    : createCompetitionCard(item);
+                homeGrid.appendChild(card);
+            });
+
+            if (latestContent.length === 0) {
+                homeGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No content available yet. Check back soon!</p>';
+            }
+        }
+
+        function renderWriteups() {
+            const grid = document.getElementById('writeups-grid');
+            grid.innerHTML = '';
+
+            const filtered = currentWriteupFilter === 'all' 
+                ? writeups 
+                : writeups.filter(w => w.category === currentWriteupFilter);
+
+            filtered.forEach(writeup => {
+                grid.appendChild(createWriteupCard(writeup));
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary); grid-column: 1/-1;">No writeups found for this category.</p>';
+            }
+        }
+
+        function renderCompetitions() {
+            const grid = document.getElementById('competitions-grid');
+            grid.innerHTML = '';
+
+            if (competitions.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary); grid-column: 1/-1;">No competition results yet. Check back soon!</p>';
+                return;
+            }
+
+            competitions.forEach(comp => {
+                grid.appendChild(createCompetitionCard(comp));
+            });
+        }
+
+        function createWriteupCard(writeup) {
+            const card = document.createElement('div');
+            card.className = 'content-card';
+            card.onclick = () => openModal(writeup, 'writeup');
+
+            const categoryColors = {
+                web: '#ff6b6b',
+                crypto: '#4ecdc4',
+                pwn: '#45b7d1',
+                forensics: '#96ceb4',
+                research: '#ffeaa7'
+            };
+
+            card.innerHTML = `
+                <div class="card-meta">
+                    <span class="card-category" style="background-color: ${categoryColors[writeup.category] || '#00d4aa'}">${writeup.category.toUpperCase()}</span>
+                    <span class="card-date">${formatDate(writeup.date)}</span>
+                </div>
+                <h3 class="card-title">${writeup.title}</h3>
+                <div class="card-event">${writeup.event}</div>
+                <p class="card-excerpt">${writeup.excerpt}</p>
+            `;
+
+            return card;
+        }
+
+        function createCompetitionCard(comp) {
+            const card = document.createElement('div');
+            card.className = 'content-card';
+            card.onclick = () => openModal(comp, 'competition');
+
+            card.innerHTML = `
+                <div class="card-meta">
+                    <span class="card-placement">#${comp.placement}</span>
+                    <span class="card-date">${formatDate(comp.date)}</span>
+                </div>
+                <h3 class="card-title">${comp.title}</h3>
+                <div class="card-event">${comp.event}</div>
+                <div class="card-stats">
+                    <div class="stat">
+                        <span class="stat-label">Teams</span>
+                        <span class="stat-value">${comp.teams}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Points</span>
+                        <span class="stat-value">${comp.points}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Categories</span>
+                        <span class="stat-value">${comp.categories}</span>
+                    </div>
+                </div>
+                <p class="card-excerpt">${comp.excerpt}</p>
+            `;
+
+            return card;
+        }
+
+        function filterWriteups(category) {
+            currentWriteupFilter = category;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === category) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            renderWriteups();
+        }
+
+        function openModal(item, type) {
+            const modal = document.getElementById('content-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalMeta = document.getElementById('modal-meta');
+            const modalBody = document.getElementById('modal-body');
+
+            modalTitle.textContent = item.title;
+            
+            if (type === 'writeup') {
+                modalMeta.innerHTML = `
+                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <span class="card-category" style="font-size: 0.8rem;">${item.category.toUpperCase()}</span>
+                        <span class="card-event" style="color: var(--accent);">${item.event}</span>
+                        <span class="card-date" style="color: var(--text-secondary);">${formatDate(item.date)}</span>
+                    </div>
+                `;
+            } else {
+                modalMeta.innerHTML = `
+                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <span class="card-placement">#${item.placement}</span>
+                        <span class="card-event" style="color: var(--accent);">${item.event}</span>
+                        <span class="card-date" style="color: var(--text-secondary);">${formatDate(item.date)}</span>
+                    </div>
+                    <div style="display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                        <div class="stat">
+                            <span class="stat-label">Teams</span>
+                            <span class="stat-value">${item.teams}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Points</span>
+                            <span class="stat-value">${item.points}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Categories</span>
+                            <span class="stat-value">${item.categories}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            modalBody.innerHTML = item.content;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            if (window.Prism) {
+                Prism.highlightAllUnder(modalBody);
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('content-modal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
         function showStatus(message, type) {
-            // Create status element if it doesn't exist
             let statusDiv = document.querySelector('.status-message');
             if (!statusDiv) {
                 statusDiv = document.createElement('div');
@@ -610,121 +998,23 @@
             }, 4000);
         }
 
-        // Render writeups based on current filter
-        function renderWriteups() {
-            const filteredWriteups = currentFilter === 'all' 
-                ? writeups 
-                : writeups.filter(w => w.category === currentFilter);
-
-            writeupsGrid.innerHTML = '';
-
-            filteredWriteups.forEach(writeup => {
-                const card = createWriteupCard(writeup);
-                writeupsGrid.appendChild(card);
-            });
-        }
-
-        // Create a writeup card element
-        function createWriteupCard(writeup) {
-            const card = document.createElement('div');
-            card.className = 'writeup-card';
-            card.onclick = () => openModal(writeup);
-
-            const categoryColors = {
-                web: '#ff6b6b',
-                crypto: '#4ecdc4',
-                pwn: '#45b7d1',
-                forensics: '#96ceb4',
-                research: '#ffeaa7'
-            };
-
-            card.innerHTML = `
-                <div class="writeup-meta">
-                    <span class="writeup-category" style="background-color: ${categoryColors[writeup.category] || '#00d4aa'}">${writeup.category.toUpperCase()}</span>
-                    <span class="writeup-date">${formatDate(writeup.date)}</span>
-                </div>
-                <h3 class="writeup-title">${writeup.title}</h3>
-                <div class="writeup-event">${writeup.event}</div>
-                <p class="writeup-excerpt">${writeup.excerpt}</p>
-            `;
-
-            return card;
-        }
-
-        // Setup filter buttons
-        function setupFilters() {
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // Remove active class from all buttons
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    // Add active class to clicked button
-                    btn.classList.add('active');
-                    // Update current filter
-                    currentFilter = btn.dataset.filter;
-                    // Re-render writeups
-                    renderWriteups();
-                });
-            });
-        }
-
-        // Open modal with writeup content
-        function openModal(writeup) {
-            modalTitle.textContent = writeup.title;
-            modalMeta.innerHTML = `
-                <div style="display: flex; gap: 1rem; margin-top: 0.5rem; align-items: center;">
-                    <span class="writeup-category" style="font-size: 0.8rem;">${writeup.category.toUpperCase()}</span>
-                    <span class="writeup-event" style="color: var(--accent);">${writeup.event}</span>
-                    <span class="writeup-date" style="color: var(--text-secondary);">${formatDate(writeup.date)}</span>
-                </div>
-            `;
-            modalBody.innerHTML = writeup.content;
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            
-            // Re-run Prism highlighting on new content
-            if (window.Prism) {
-                Prism.highlightAllUnder(modalBody);
-            }
-        }
-
-        // Close modal
-        function closeModal() {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Format date
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-            });
-        }
-
         // Close modal when clicking outside
         window.onclick = function(event) {
+            const modal = document.getElementById('content-modal');
             if (event.target === modal) {
                 closeModal();
             }
         }
 
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
+        // Handle browser back/forward
+        window.onpopstate = function() {
+            const hash = window.location.hash.slice(1) || 'home';
+            if (['home', 'about', 'writeups', 'competitions'].includes(hash)) {
+                showPage(hash);
+            }
+        }
 
-        // Initialize the page when DOM is loaded
+        // Initialize on load
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
