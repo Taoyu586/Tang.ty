@@ -1,4 +1,9 @@
-# Writeup
+---
+title: Janus
+category: web
+event: K17 
+date: 2025-09-19
+---
 
 ## Challenge Details
 
@@ -7,8 +12,6 @@ It's too easy to cheat at Wordle, so I fixed that!
 What are the words for the 72nd, 73rd, and 74th day?
 
 Enter your answer in the format `K17{<72nd day word>, <73rd day word>, <74th day word>}`.
-
----
 
 ## Steps I did
 
@@ -33,8 +36,6 @@ for i in parts:
 for i in range(len(wordlist)):
     print(f"Day {i+1}: {wordlist[i]}")
 ```
-
----
 
 ## Solution
 
