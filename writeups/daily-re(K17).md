@@ -1,5 +1,5 @@
 ---
-title: Janus
+title: Daily Re
 category: web
 event: K17 
 date: 2025-09-19
