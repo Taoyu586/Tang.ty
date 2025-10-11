@@ -378,11 +378,22 @@
         .modal-body ul, .modal-body ol {
             margin: 1rem 0 1rem 2rem;
             color: var(--text-secondary);
+            list-style-position: outside;
+            padding-left: 1.5rem;
+        }
+
+        .modal-body ul {
+            list-style-type: disc;
+        }
+
+        .modal-body ol {
+            list-style-type: decimal;
         }
 
         .modal-body li {
             margin-bottom: 0.5rem;
             line-height: 1.6;
+            display: list-item;
         }
 
         /* Footer */
@@ -708,7 +719,13 @@
             const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${folder}`;
             
             try {
-                const response = await fetch(apiUrl);
+                // Add cache busting to GitHub API call
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache'
+                    }
+                });
                 if (!response.ok) {
                     if (response.status === 404) {
                         console.log(`No ${folder} folder found in repository`);
@@ -723,7 +740,13 @@
                 );
 
                 const contentPromises = markdownFiles.map(async file => {
-                    const contentResponse = await fetch(file.download_url);
+                    // Add cache busting with timestamp and headers
+                    const contentResponse = await fetch(file.download_url + '?t=' + Date.now(), {
+                        headers: {
+                            'Cache-Control': 'no-cache, no-store, must-revalidate',
+                            'Pragma': 'no-cache'
+                        }
+                    });
                     const markdown = await contentResponse.text();
                     return parseMarkdown(markdown, file.name, folder);
                 });
