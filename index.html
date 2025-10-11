@@ -716,11 +716,24 @@
 
         // Fetch content from GitHub
         async function fetchGitHubContent(owner, repo, folder) {
-            // Add timestamp to API URL for cache busting
-            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${folder}?t=${Date.now()}`;
+            // Use cache-busting sparingly - only once every 5 minutes
+            const cacheBuster = Math.floor(Date.now() / (5 * 60 * 1000));
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${folder}?cb=${cacheBuster}`;
             
             try {
                 const response = await fetch(apiUrl);
+                
+                // Check for rate limiting
+                if (response.status === 403) {
+                    const resetTime = response.headers.get('X-RateLimit-Reset');
+                    console.warn('GitHub API rate limit exceeded');
+                    if (resetTime) {
+                        const resetDate = new Date(resetTime * 1000);
+                        console.warn(`Rate limit resets at: ${resetDate.toLocaleTimeString()}`);
+                    }
+                    return [];
+                }
+                
                 if (!response.ok) {
                     if (response.status === 404) {
                         console.log(`No ${folder} folder found in repository`);
@@ -735,8 +748,8 @@
                 );
 
                 const contentPromises = markdownFiles.map(async file => {
-                    // Add cache busting timestamp to download URL
-                    const contentResponse = await fetch(file.download_url + '?t=' + Date.now());
+                    // Use the same cache buster for consistency
+                    const contentResponse = await fetch(`${file.download_url}?cb=${cacheBuster}`);
                     const markdown = await contentResponse.text();
                     return parseMarkdown(markdown, file.name, folder);
                 });
@@ -745,7 +758,7 @@
                 return content.filter(item => item !== null);
             } catch (error) {
                 console.error(`Error fetching ${folder} from GitHub:`, error);
-                throw error;
+                return [];
             }
         }
 
