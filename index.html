@@ -513,21 +513,14 @@
                     <ul>
                         <li>SUSTHACK Hackathon Winner</li>
                         <li>Ernst & Young Business Case Study Winner</li>
-                        <li>Dean's List (Semester 3 & 4)</li>
+                        <li>Dean's List (Semester 3 & 4 & 5)</li>
                         <li>Jeffery Cheah (ACE) Scholarship</li>
                     </ul>
 
-                    <h3>Community Involvement</h3>
-                    <ul>
-                        <li>Volunteer for National Taoist Association</li>
-                        <li>Student Program Representative for Bachelor of Information Security</li>
-                        <li>Committee Member for Sunway Photography Club</li>
-                    </ul>
-
                     <h3>Contact</h3>
-                    <p>Email: Tangtaoyu1@gmail.com<br>
-                    Phone: +60 14624-1913<br>
-                    Location: Kuala Lumpur, Malaysia</p>
+                    <p>Email: Tangtaoyu1@gmail.com<br></p>
+                    <p>Discord: dead_______<br></p>
+                    <p>LinkedIn: <a href="www.linkedin.com/in/tang-tao-yu-27930627a">https://www.linkedin.com/in/tang-tao-yu-27930627a</a></p>
                 </div>
             </div>
         </section>
@@ -680,7 +673,7 @@
             }
 
             try {
-                showStatus('🔄 Loading content from GitHub...', 'info');
+                showStatus('Loading content from GitHub...', 'info');
                 
                 // Load writeups
                 const githubWriteups = await fetchGitHubContent(repoInfo.owner, repoInfo.repo, 'writeups');
@@ -701,10 +694,10 @@
                 }
 
                 renderHome();
-                showStatus(`✅ Loaded content from GitHub`, 'success');
+                showStatus(`Loaded content from GitHub`, 'success');
             } catch (error) {
                 console.error('Error loading from GitHub:', error);
-                showStatus('❌ Error loading from GitHub - using default content', 'error');
+                showStatus('Error loading from GitHub - using default content', 'error');
                 renderHome();
             }
         }
