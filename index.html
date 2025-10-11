@@ -903,12 +903,16 @@
 
             card.innerHTML = `
                 <div class="card-meta">
-                    <span class="card-placement">#${comp.placement}</span>
+                    <span class="card-category" style="background-color: #6c5ce7;">COMPETITION</span>
                     <span class="card-date">${formatDate(comp.date)}</span>
                 </div>
                 <h3 class="card-title">${comp.title}</h3>
                 <div class="card-event">${comp.event}</div>
                 <div class="card-stats">
+                    <div class="stat">
+                        <span class="stat-label">Placement</span>
+                        <span class="stat-value">#${comp.placement}</span>
+                    </div>
                     <div class="stat">
                         <span class="stat-label">Teams</span>
                         <span class="stat-value">${comp.teams}</span>
@@ -961,11 +965,15 @@
             } else {
                 modalMeta.innerHTML = `
                     <div style="display: flex; gap: 1rem; margin-top: 0.5rem; align-items: center; flex-wrap: wrap;">
-                        <span class="card-placement">#${item.placement}</span>
+                        <span class="card-category" style="background-color: #6c5ce7; font-size: 0.8rem;">COMPETITION</span>
                         <span class="card-event" style="color: var(--accent);">${item.event}</span>
                         <span class="card-date" style="color: var(--text-secondary);">${formatDate(item.date)}</span>
                     </div>
                     <div style="display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                        <div class="stat">
+                            <span class="stat-label">Placement</span>
+                            <span class="stat-value">#${item.placement}</span>
+                        </div>
                         <div class="stat">
                             <span class="stat-label">Teams</span>
                             <span class="stat-value">${item.teams}</span>
