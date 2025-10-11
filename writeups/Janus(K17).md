@@ -120,9 +120,9 @@ dns:
 
 ## Steps I went through
 
-* looked at attachment
-* Saw the code only checks initially
-* Looked at docker file and saw dns rebinding which is a hint for dns rebinding attack
+* First thing I did was looked at the source code.
+* I saw the checking code and realised that it only has an initial DNS check and validates everything else after it.
+* I then proceeded to look at docker file and saw dns rebinding which is a hint for dns rebinding attack
 * Solution was to initially use a nasa IP address which was given then after passing the ip validation change to local 127.0.0.1 for the flag to be outputted then curl it
 * I didn't have a dns server so I use a website [https://lock.cmpxchg8b.com/rebinder.html](https://lock.cmpxchg8b.com/rebinder.html)
 * Required brute force because of round robin behavior of dns leading to frequent bad gateway and needing the stars to align to get the right combination
