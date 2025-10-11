@@ -749,17 +749,9 @@
                     content = body;
                 }
 
-                // Extract title from first h1, but avoid matching code or inline content
-                const lines = content.split('\n');
-                let extractedTitle = '';
-                for (let line of lines) {
-                    // Match only lines that start with # and aren't inside code blocks
-                    if (line.match(/^#\s+[^`]+$/) && !line.includes('```')) {
-                        extractedTitle = line.replace(/^#\s+/, '').trim();
-                        break;
-                    }
-                }
-                const title = metadata.title || extractedTitle || filename.replace('.md', '');
+                // Use filename as title (remove .md extension and format it nicely)
+                const filenameTitle = filename.replace('.md', '').replace(/-/g, ' ').replace(/_/g, ' ');
+                const title = metadata.title || filenameTitle;
 
                 const paragraphs = content.split('\n\n').filter(p => p.trim() && !p.startsWith('#'));
                 const excerpt = metadata.excerpt || (paragraphs[0] ? paragraphs[0].replace(/\n/g, ' ').substring(0, 150) + '...' : '');
