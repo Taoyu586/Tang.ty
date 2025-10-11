@@ -789,6 +789,12 @@
                 const paragraphs = content.split('\n\n').filter(p => p.trim() && !p.startsWith('#'));
                 const excerpt = metadata.excerpt || (paragraphs[0] ? paragraphs[0].replace(/\n/g, ' ').substring(0, 150) + '...' : '');
 
+                // Configure marked.js options for better rendering
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true
+                });
+
                 const htmlContent = marked.parse(content);
 
                 const baseData = {
